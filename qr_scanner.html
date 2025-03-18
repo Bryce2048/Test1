@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Scanner</title>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+        h2 {
+            color: #333;
+        }
+        #reader {
+            width: 100%;
+            max-width: 400px;
+            margin: auto;
+            padding: 10px;
+            border-radius: 10px;
+            background: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        }
+        #debug {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h2>📷 Scan a QR Code</h2>
+    <div id="reader" style="width: 100%;"></div>
+    <div id="debug" style="color: red;"></div>
+
+    <script>
+        function onScanSuccess(decodedText, decodedResult) {
+            console.log(`Code scanned = ${decodedText}`);
+            // Redirect back to the app with the scanned data
+            window.location.href = `/?scanned=${encodeURIComponent(decodedText)}`;
+        }
+
+        function onScanFailure(error) {
+            console.warn(`Code scan error = ${error}`);
+        }
+
+        // Initialize the QR code scanner
+        var html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader", { fps: 10, qrbox: 250 }, false);
+        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+
+        // Debugging: Check if the camera is accessible
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then((stream) => {
+                document.getElementById("debug").innerText = "Camera access granted";
+                console.log("Camera access granted");
+            })
+            .catch((error) => {
+                document.getElementById("debug").innerText = `Camera access denied: ${error}`;
+                console.error("Camera access denied:", error);
+            });
+    </script>
+</body>
+</html>
